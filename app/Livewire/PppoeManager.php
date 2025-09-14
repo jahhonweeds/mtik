@@ -15,6 +15,7 @@ class PppoeManager extends Component
     public $accountsRaw = [];
 
     public $activeConnections;
+    public $totalActiveConnections = 0;
     public $profiles;
     public $showCreateForm = false;
     public $showEditForm = false;
@@ -42,6 +43,7 @@ class PppoeManager extends Component
     public function mount()
     {
         $this->checkConnection();
+        $this->loadActiveConnections();
         $this->loadAccounts();
         $this->loadProfiles();
     }
@@ -69,6 +71,8 @@ class PppoeManager extends Component
         try {
             $mikrotik = new MikrotikService();
             $this->activeConnections = $mikrotik->getPppoeActive();
+            count($this->activeConnections);
+            $this->totalActiveConnections = count($this->activeConnections);
         } catch (\Exception $e) {
             $this->activeConnections = [];
             session()->flash('error', 'Failed to load active connections: ' . $e->getMessage());

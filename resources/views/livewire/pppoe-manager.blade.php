@@ -1,9 +1,29 @@
 <!-- resources/views/livewire/pppoe-manager.blade.php -->
 
-<div class="container mx-auto p-6">
-    <div class="bg-white rounded-lg shadow-md p-6">
+<div class=" mx-auto p-6">
+    <div class=" rounded-lg shadow-md p-6">
+        
         <h1 class="text-2xl font-bold mb-6">MikroTik PPPoE Account Management</h1>
-
+         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-red-500 rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-white">Total Accounts</h3>
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h-10a2 2 0 01-2-2V8a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2zM9 11h6m-3 3V8"></path>
+                    </svg>
+                </div>
+                <h1 class="font-bold text-white">{{ count($accountsRaw) }}</h1>
+            </div>
+            <div class="bg-pink-500 rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-white">Total Connected Accounts</h3>
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h-10a2 2 0 01-2-2V8a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2zM9 11h6m-3 3V8"></path>
+                    </svg>
+                </div>
+                <input disabled class="text-6xl" wire:model.live="totalActiveConnections">
+             </div>
+        </div>
         <!-- Connection Status -->
         <div class="mb-6 flex items-center">
             <span class="mr-2">Connection Status:</span>
@@ -30,10 +50,13 @@
 
         <!-- Action Buttons -->
         <div class="flex flex-wrap gap-4 mb-6">
+            <flux:modal.trigger name="create-pppoe-account">
+
             <button wire:click="$set('showCreateForm', true)" 
                     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                 Create New Account
             </button>
+            </flux:modal.trigger>
             
             <button wire:click="syncWithMikrotik" 
                     class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
@@ -44,10 +67,12 @@
                     class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
                 Refresh Active Connections
             </button>
+
+           
         </div>
 
         <!-- Active Connections -->
-        @if(isset($activeConnections) && count($activeConnections) > 0)
+        {{-- @if(isset($activeConnections) && count($activeConnections) > 0)
         <div class="mb-8">
             <h2 class="text-xl font-semibold mb-3">Active PPPoE Connections ({{ count($activeConnections) }})</h2>
             <div class="overflow-x-auto bg-gray-100 rounded-lg p-4">
@@ -73,12 +98,11 @@
                 </table>
             </div>
         </div>
-        @endif
+        @endif --}}
 
         <!-- Accounts Table -->
-        <h2 class="text-xl font-semibold mb-3">PPPoE Accounts {{ count($accountsRaw) }} </h2>
         <div class="overflow-x-auto">
-            <table class="w-full bg-white">
+            <table class="w-full bg-white dark:bg-gray-800 rounded-lg shadow-md">
                 <thead>
                     <tr class="bg-gray-200">
                         <th class="px-4 py-2">Username</th>
@@ -89,22 +113,17 @@
                 </thead>
                 <tbody>
                     @forelse ($accounts as $account)
-                        <tr class="border-t">
+                        <tr class="border-t ">
                             <td class="px-4 py-2">{{ $account['name'] ?? 'N/A'  }}</td>
-                            <td class="px-4 py-2">{{ $account['profile'] ?? 'N/A' }}</td>
-                            <td class="px-4 py-2">
-                                <span class="px-2 py-1 rounded text-xs {{ $account['disabled'] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                    {{ $account['disabled'] ? 'Active' : 'Disabled' }}
-                                </span>
+                            <td class="px-4 py-2 text-center" >{{ $account['profile'] ?? 'N/A' }}</td>
+                            <td class="px-4 py-2 text-center">
+                                <flux:badge color="{{ $account['disabled'] ? 'green' : 'red'}}"> {{ $account['disabled'] ? 'Active' : 'Disabled' }}</flux:badge>
+                               
                             </td>
-                            <td class="px-4 py-2">
+                            <td class="px-4 py-2 text-center">
                                 <button wire:click="editAccount({{ $account['.id'] }})" 
                                         class="bg-yellow-500 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm">
                                     Edit
-                                </button>
-                                <button wire:click="toggleStatus({{ $account['.id'] }})" 
-                                        class="bg-{{ $account['disabled'] ? 'red' : 'green' }}-500 hover:bg-{{ $account['disabled'] ? 'red' : 'green' }}-700 text-white px-3 py-1 rounded text-sm ml-2">
-                                    {{ $account['disabled'] ? 'Disable' : 'Enable' }}
                                 </button>
                                
                             </td>
@@ -128,8 +147,8 @@
 
         <!-- Create Modal -->
         @if ($showCreateForm)
-            <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                <div class="bg-white rounded-lg p-6 w-full max-w-md">
+        <flux:modal name="create-pppoe-account" :show="true" focusable class="max-w-2xl">          
+        <div class="bg-white rounded-lg p-6 w-full ">
                     <h2 class="text-xl font-bold mb-4">Create PPPoE Account</h2>
                     
                     <form wire:submit.prevent="createAccount">
@@ -206,7 +225,7 @@
                         </div>
                     </form>
                 </div>
-            </div>
+        </flux:modal>       
         @endif
 
         <!-- Edit Modal -->
