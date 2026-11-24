@@ -11,6 +11,7 @@ return new class extends Migration
     {
         Schema::create('pppoe_accounts', function (Blueprint $table) {
             $table->id();
+            $table->string('account_name')->nullable();
             $table->string('username')->unique();
             $table->string('password');
             $table->string('service')->default('pppoe');
@@ -19,6 +20,8 @@ return new class extends Migration
             $table->text('comment')->nullable();
             $table->boolean('active')->default(true);
             $table->string('mikrotik_id')->nullable();
+            $table->decimal('bill_amount', 10, 2)->nullable();
+            $table->date('bill_due_date')->nullable();
             $table->timestamps();
         });
     }

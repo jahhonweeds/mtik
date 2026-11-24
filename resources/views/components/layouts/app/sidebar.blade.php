@@ -16,7 +16,8 @@
                 <flux:navlist.group :heading="__('Platform')" class="grid">
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                     <flux:navlist.item icon="user" :href="route('pppoe.manager')" :current="request()->routeIs('pppoe.manager')" wire:navigate>{{ __('Accounts') }}</flux:navlist.item>
-                
+                    <flux:navlist.item icon="chart-bar" :href="route('billing.manager')" :current="request()->routeIs('billing.manager')" wire:navigate>{{ __('Billing') }}</flux:navlist.item>    
+                    <flux:navlist.item icon="server" :href="route('settings.mikrotik')" :current="request()->routeIs('settings.mikrotik')" wire:navigate>{{ __('MikroTik') }}</flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
 

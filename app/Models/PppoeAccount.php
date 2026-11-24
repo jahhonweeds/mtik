@@ -11,6 +11,7 @@ class PppoeAccount extends Model
     use HasFactory;
 
     protected $fillable = [
+        'account_name',
         'username',
         'password',
         'service',
@@ -18,8 +19,11 @@ class PppoeAccount extends Model
         'remote_address',
         'comment',
         'active',
-        'mikrotik_id'
+        'mikrotik_id',
+        'bill_amount',
+        'bill_due_date',
     ];
+       
 
     protected $casts = [
         'active' => 'boolean',
